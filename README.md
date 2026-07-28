@@ -11,7 +11,7 @@ A Sleek, lightweight LuCI web interface module for OpenWrt that seamlessly monit
 
 This application entirely eliminates the need to log into the ODU web portal. It bridges your router and the ODU hardware, pulling real-time baseband diagnostics and pushing advanced hardware-level AT commands straight from your router's dashboard.
 </div>
----
+
 
 ## Features
 
