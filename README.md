@@ -27,7 +27,7 @@ This application entirely eliminates the need to log into the ODU web portal. It
 
 ## Prerequisites
 
-Since this application utilizes the router's command line to establish a connection and push configurations to the ODU, ensure your OpenWrt Router and the ODU has the `telnet` enabled.
+Since this application utilizes the router's command line to establish a connection and push configurations to the ODU, ensure your ODU has the `telnet` enabled.
 
 ---
 
