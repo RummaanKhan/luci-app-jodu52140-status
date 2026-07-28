@@ -1,4 +1,5 @@
 <div align="center">
+ 
 # luci-app-jodu52140-status
 ## Made with Gemini as a Personal Fun Project.
  
