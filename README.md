@@ -34,7 +34,7 @@ Since this application utilizes the router's command line to establish a connect
 ## Installation
 
 ### Pre-built Package (Recommended)
-Grab the Latest from the ![Releases](https://github.com/RummaanKhan/luci-app-jodu52140-status/releases) page:
+Grab the Latest from the [Releases](https://github.com/RummaanKhan/luci-app-jodu52140-status/releases) page:
 ```sh
 apk add --allow-untrusted luci-app-jodu52140-status-<version>.apk
 ```
