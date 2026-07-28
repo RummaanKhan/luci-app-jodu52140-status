@@ -1,5 +1,7 @@
+<div align="center">
 # luci-app-jodu52140-status
-
+## Made with Gemini as a Personal Fun Project.
+ 
 ![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 ![OpenWrt Compatible](https://img.shields.io/badge/OpenWrt-Compatible-success.svg)
 ![ImmortalWrt Compatible](https://img.shields.io/badge/ImmortalWrt-Compatible-success.svg)
@@ -7,7 +9,7 @@
 A Sleek, lightweight LuCI web interface module for OpenWrt that seamlessly monitors and configures the **JODU52140** directly from your router. 
 
 This application entirely eliminates the need to log into the ODU web portal. It bridges your router and the ODU hardware, pulling real-time baseband diagnostics and pushing advanced hardware-level AT commands straight from your router's dashboard.
-
+</div>
 ---
 
 ## Features
