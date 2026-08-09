@@ -1,5 +1,5 @@
 {
-    "luci-app-jodu52140-status": {
+    "luci-app-jodu52140": {
         "description": "Grant WebUI access to ODU 5G Dashboard",
         "read": {
             "uci": [ "jodu52140" ],

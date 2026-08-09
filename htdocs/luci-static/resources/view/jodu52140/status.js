@@ -13,60 +13,171 @@ return view.extend({
     render: function() {
         var html = `
         <style>
-            .sa-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-            .sa-header-bar h2 { margin: 0; }
-            .sa-grid-top { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
-            .sa-card { padding: 20px; text-align: center; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); } 
-            .sa-icon { width: 42px; height: 42px; margin: 0 auto 12px auto; }
-            .sa-card h2 { margin: 5px 0; font-size: 24px; font-weight: 800; letter-spacing: 0.5px; }
-            .sa-card span { font-size: 12px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; opacity: 0.7; }
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+            
+            #cbi-jodu52140 {
+                font-family: 'Inter', sans-serif;
+                color: #e2e8f0;
+            }
+            
+            .sa-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+            .sa-title-row { display: flex; align-items: center; gap: 15px; width: auto; }
+            .sa-header-bar h2 { margin: 0; white-space: nowrap; line-height: 1; font-weight: 800; font-size: 24px; color: #f8fafc; }
+            
+            .sa-uptime { display: flex; flex-direction: row; align-items: baseline; justify-content: flex-start; margin-top: 2px; }
+            .sa-uptime-label { font-size: 13px; color: #94a3b8; font-weight: 500; margin-right: 6px; }
+            .sa-uptime-val { font-size: 13px; font-weight: 600; color: #f8fafc; }
+            
+            .action-btn {
+                margin: 0 !important;
+                padding: 6px 12px !important;
+                height: 32px !important;
+                border-radius: 6px !important;
+                box-sizing: border-box !important;
+                font-size: 13px !important;
+                font-weight: 600 !important;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: background 0.15s ease;
+                border: none !important;
+                gap: 5px;
+            }
+            
+            #odu-reboot-btn {
+                background-color: #dc2626 !important;
+                border: 1px solid #b91c1c !important;
+                box-shadow: 0 0 8px rgba(220, 38, 38, 0.4) !important;
+                color: #ffffff !important;
+            }
+            #odu-reboot-btn:hover {
+                background-color: #b91c1c !important;
+                box-shadow: 0 0 12px rgba(220, 38, 38, 0.6) !important;
+            }
+            
+            #odu-settings-btn {
+                background-color: #0284c7 !important;
+                border: 1px solid #0369a1 !important;
+                box-shadow: 0 0 8px rgba(2, 132, 199, 0.4) !important;
+                color: #ffffff !important;
+            }
+            #odu-settings-btn:hover {
+                background-color: #0369a1 !important;
+                box-shadow: 0 0 12px rgba(2, 132, 199, 0.6) !important;
+            }
+
+            .sa-grid-top { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 20px; }
+            
+            .sa-card { 
+                padding: 16px 15px; 
+                text-align: center; 
+                border-radius: 12px; 
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+            } 
+            
+            .sa-icon { width: 42px; height: 42px; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; }
+            .sa-card h2 { margin: 6px 0; font-size: 22px; font-weight: 700; }
+            .sa-card span { font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; color: #94a3b8; }
             
             .sa-grid-bot { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
-            @media (max-width: 900px) { .sa-grid-bot { grid-template-columns: 1fr; } }
             
-            .sa-transparent-node { border: 1px solid var(--border-color, #444); border-radius: 6px; overflow: hidden; background: transparent; }
+            .cbi-section h3 { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: #f8fafc; margin-bottom: 12px; }
+            
+            .sa-transparent-node { 
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                border-radius: 8px; 
+                overflow: hidden; 
+            }
             .sa-table { width: 100%; border-collapse: collapse; }
-            
-            .sa-tr { border-bottom: 1px solid var(--border-color, #333); }
+            .sa-tr { border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
             .sa-tr:last-child { border-bottom: none; }
-            .sa-td { padding: 12px 15px; font-size: 13px; }
-            .sa-td.left { font-weight: 500; opacity: 0.85; width: 45%; } 
-            .sa-td.right { text-align: right; font-weight: 700; width: 55%; }
+            
+            .sa-td { padding: 10px 14px; font-size: 13px; }
+            .sa-td.left { font-weight: 500; color: #94a3b8; width: 45%; } 
+            .sa-td.right { text-align: right; font-weight: 600; width: 55%; color: #e2e8f0; }
             .val-highlight { font-size: 14px; }
+            .sa-grid-mid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 20px; }
+            .sa-grid-mid h3 { margin: 0; font-size: 14px; font-weight: 700; color: #f8fafc; text-align: left; }
+
+            @media (max-width: 900px) { 
+                .sa-grid-bot { grid-template-columns: 1fr; } 
+            }
+            
+            @media (max-width: 650px) {
+                .sa-title-row { width: 100%; justify-content: space-between; gap: 10px; }
+                .sa-uptime { justify-content: flex-end; margin-top: 0; }
+                .sa-header-actions { width: 100%; }
+                .action-btn { flex: 1; height: 38px !important; font-size: 14px !important; }
+                .sa-card { padding: 15px 12px; }
+                .sa-card h2 { font-size: 20px; }
+                .sa-td { padding: 8px 10px; }
+            }
         </style>
 
         <div class="cbi-map" id="cbi-jodu52140">
             <div class="sa-header-bar">
-                <h2 name="content">5G Dashboard</h2>
-                <button class="btn" id="odu-settings-btn">⚙️ Settings</button>
+                <div class="sa-title-row">
+                    <h2 name="content">5G Dashboard</h2>
+                    <div class="sa-uptime">
+                        <span class="sa-uptime-label">Uptime:</span>
+                        <span id="ui-uptime-val" class="sa-uptime-val">--</span>
+                    </div>
+                </div>
+                
+                <div class="sa-header-actions">
+                    <button class="btn action-btn btn-reboot" id="odu-reboot-btn">
+                        <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                        <span style="color:#ffffff !important;">Reboot</span>
+                    </button>
+                    <button class="btn action-btn btn-settings" id="odu-settings-btn">
+                        <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <span style="color:#ffffff !important;">Settings</span>
+                    </button>
+                </div>
             </div>
             
             <div class="sa-grid-top">
                 <div class="cbi-section-node sa-card">
                     <div class="sa-icon">
-                        <img src="/luci-static/resources/view/jodu52140/jio-logo.png" onerror="this.onerror=null; this.src='https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/jio-logo-icon.png';" style="width: 42px; height: 42px; border-radius: 50%; object-fit: contain;">
+                        <img src="/luci-static/resources/view/jodu52140/jio-logo.png" onerror="this.onerror=null; this.src='https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/jio-logo-icon.png';" style="width: 48px; height: 48px; border-radius: 50%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
                     </div>
-                    <h2 style="font-size: 20px; margin-top:12px; color: #4D7DFF;">JioTrue 5G</h2><span id="ui-top-mode">--</span>
+                    <h2 style="color: #60a5fa; text-shadow: 0 0 15px rgba(96,165,250,0.4);">JioTrue 5G</h2><span id="ui-top-mode">--</span>
                 </div>
                 <div class="cbi-section-node sa-card">
-                    <div class="sa-icon" id="icon-temp"><svg viewBox="0 0 24 24" fill="#444444"><path d="M15 13V5A3 3 0 0 0 9 5V13A5 5 0 1 0 15 13M12 4A1 1 0 0 1 13 5V8H11V5A1 1 0 0 1 12 4Z"/></svg></div>
+                    <div class="sa-icon" id="icon-temp">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+                    </div>
                     <h2 id="ui-temp">--°C</h2><span>Temperature</span>
                 </div>
                 <div class="cbi-section-node sa-card">
                     <div class="sa-icon" id="icon-sig">
-                        <svg viewBox="0 0 24 24" fill="none" width="42" height="42">
-                            <rect x="2" y="17" width="3" height="5" rx="0.5" fill="#444444"/>
-                            <rect x="6.5" y="14" width="3" height="8" rx="0.5" fill="#444444"/>
-                            <rect x="11" y="11" width="3" height="11" rx="0.5" fill="#444444"/>
-                            <rect x="15.5" y="8" width="3" height="14" rx="0.5" fill="#444444"/>
-                            <rect x="20" y="5" width="3" height="17" rx="0.5" fill="#444444"/>
+                        <svg viewBox="0 0 24 24" fill="none" width="36" height="36">
+                            <rect x="2" y="16" width="3" height="6" rx="1.5" fill="#334155"/>
+                            <rect x="7" y="12" width="3" height="10" rx="1.5" fill="#334155"/>
+                            <rect x="12" y="8" width="3" height="14" rx="1.5" fill="#334155"/>
+                            <rect x="17" y="4" width="3" height="18" rx="1.5" fill="#334155"/>
                         </svg>
                     </div>
                     <h2 id="ui-sig-pct">--%</h2><span>Signal Quality</span>
                 </div>
                 <div class="cbi-section-node sa-card">
-                    <div class="sa-icon" id="icon-conn"><svg viewBox="0 0 24 24" fill="#cf6679"><path d="M22.11 21.46L2.39 1.73L1.11 3L5.56 7.45C3.54 8.21 2 10.15 2 12.5C2 15.54 4.46 18 7.5 18H16.11L19.84 21.73L21.11 20.46V21.46M7.5 16C5.57 16 4 14.43 4 12.5C4 10.82 5.19 9.4 6.78 9.06L14.71 17H7.5M19.35 10.04C18.67 6.59 15.64 4 12 4C10.66 4 9.41 4.36 8.36 4.97L9.95 6.56C10.59 6.2 11.27 6 12 6C15.31 6 18 8.69 18 12C18 12.44 17.95 12.87 17.85 13.27L20.85 16.27C21.5 15.22 22 13.9 22 12.5C22 10.69 20.86 9.08 19.35 10.04Z"/></svg></div>
-                    <h2 id="ui-state" style="font-size: 18px; margin-top:12px; color: #cf6679;">LINK DOWN</h2><span>Connection</span>
+                    <div class="sa-icon" id="icon-conn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M17.31 17.31A10.43 10.43 0 0 1 12 19c-7 0-10-7-10-7a13.23 13.23 0 0 1 7.58-6.19"/><path d="M14 14.66V17c0 .55-.47.98-.97 1.21C11.69 18.75 10 18.24 10 17v-2.34"/><path d="m2 2 20 20"/></svg>
+                    </div>
+                    <h2 id="ui-state" style="color: #f43f5e; text-shadow: 0 0 15px rgba(244,63,94,0.4);">LINK DOWN</h2><span>Connection</span>
+                </div>
+            </div>
+
+            <div class="sa-grid-mid">
+                <div class="cbi-section-node sa-card" style="padding: 10px 15px; display: flex; justify-content: space-evenly; align-items: center; flex-direction: row; flex-wrap: wrap;">
+                    <div style="font-weight: 600; color: #f8fafc; font-size: 14px;">Data Usage (Session)</div>
+                    <div style="display: flex; gap: 30px;">
+                        <div style="text-align: center;"><span style="font-size: 11px; color:#94a3b8;">DOWNLOAD</span> <b id="ui-rx-bytes" style="font-size: 16px; color: #4ade80;">0 B</b></div>
+                        <div style="text-align: center;"><span style="font-size: 11px; color:#94a3b8;">UPLOAD</span> <b id="ui-tx-bytes" style="font-size: 16px; color: #38bdf8;">0 B</b></div>
+                    </div>
                 </div>
             </div>
 
@@ -84,8 +195,8 @@ return view.extend({
                             <tr class="sa-tr"><td class="sa-td left">Modulation</td><td class="sa-td right val-highlight" id="ui-mod">--</td></tr>
                             <tr class="sa-tr"><td class="sa-td left">MIMO</td><td class="sa-td right val-highlight" id="ui-mimo">--</td></tr>
                             <tr class="sa-tr"><td class="sa-td left">SS-RSRP</td><td class="sa-td right val-highlight" id="ui-rsrp">--</td></tr>
-                            <tr class="sa-tr"><td class="sa-td left">SS-RSRQ</td><td class="sa-td right val-highlight" id="ui-rsrq" style="color: #ec4899;">--</td></tr>
-                            <tr class="sa-tr"><td class="sa-td left">SS-SINR</td><td class="sa-td right val-highlight" id="ui-sinr" style="color: #0ea5e9;">--</td></tr>
+                            <tr class="sa-tr"><td class="sa-td left">SS-RSRQ</td><td class="sa-td right val-highlight" id="ui-rsrq" style="color: #f472b6;">--</td></tr>
+                            <tr class="sa-tr"><td class="sa-td left">SS-SINR</td><td class="sa-td right val-highlight" id="ui-sinr" style="color: #38bdf8;">--</td></tr>
                         </table>
                     </div>
                 </div>
@@ -103,8 +214,8 @@ return view.extend({
                             <tr class="sa-tr"><td class="sa-td left">Modulation</td><td class="sa-td right val-highlight" id="ui-scc-mod">NA</td></tr>
                             <tr class="sa-tr"><td class="sa-td left">MIMO</td><td class="sa-td right val-highlight" id="ui-scc-mimo">NA</td></tr>
                             <tr class="sa-tr"><td class="sa-td left">SS-RSRP</td><td class="sa-td right val-highlight" id="ui-scc-rsrp">NA</td></tr>
-                            <tr class="sa-tr"><td class="sa-td left">SS-RSRQ</td><td class="sa-td right val-highlight" id="ui-scc-rsrq" style="color: #ec4899;">NA</td></tr>
-                            <tr class="sa-tr"><td class="sa-td left">SS-SINR</td><td class="sa-td right val-highlight" id="ui-scc-sinr" style="color: #0ea5e9;">NA</td></tr>
+                            <tr class="sa-tr"><td class="sa-td left">SS-RSRQ</td><td class="sa-td right val-highlight" id="ui-scc-rsrq" style="color: #f472b6;">NA</td></tr>
+                            <tr class="sa-tr"><td class="sa-td left">SS-SINR</td><td class="sa-td right val-highlight" id="ui-scc-sinr" style="color: #38bdf8;">NA</td></tr>
                         </table>
                     </div>
                 </div>
@@ -113,6 +224,59 @@ return view.extend({
 
         var container = document.createElement('div');
         container.innerHTML = html;
+
+        var cachedBt = sessionStorage.getItem('odu_boot_time');
+        if (cachedBt) {
+            window.oduBootTime = parseInt(cachedBt, 10);
+        }
+
+        fs.exec_direct('/bin/sh', ['-c', 'cat /tmp/odu_boot_time 2>/dev/null']).then(function(res) {
+            if (res && res.trim() !== '') {
+                var bt = parseInt(res.trim(), 10);
+                if (!isNaN(bt)) {
+                    window.oduBootTime = bt;
+                    sessionStorage.setItem('odu_boot_time', bt);
+                }
+            }
+        }).catch(function(e) {});
+
+        var rebootBtn = container.querySelector('#odu-reboot-btn');
+        rebootBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to reboot the Jio ODU?')) {
+                uci.load('jodu52140').then(function() {
+                    var ip = uci.get('jodu52140', 'main', 'ip') || '192.168.225.1';
+                    
+                    isConfiguring = true; 
+                    
+                    var stateEl = document.getElementById('ui-state');
+                    var iconEl = document.getElementById('icon-conn');
+                    var secondsLeft = 50; 
+                    
+                    if (stateEl && iconEl) {
+                        stateEl.style.color = '#ef4444'; 
+                        
+                        iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="36" height="36"><circle cx="20" cy="20" r="16" fill="none" stroke="#334155" stroke-width="3"/><circle cx="20" cy="20" r="16" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="25 75" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="1s" repeatCount="indefinite"/></circle><circle cx="20" cy="20" r="8" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="10 40" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="360 20 20" to="0 20 20" dur="1.5s" repeatCount="indefinite"/></circle><circle cx="20" cy="20" r="3" fill="#ef4444"><animate attributeName="opacity" values="1;0.3;1" dur="1s" repeatCount="indefinite"/></circle></svg>';
+                        
+                        stateEl.innerText = 'REBOOTING ODU (' + secondsLeft + 's)';
+                        
+                        var countdownTimer = setInterval(function() {
+                            secondsLeft--;
+                            if (secondsLeft > 0) {
+                                stateEl.innerText = 'REBOOTING ODU (' + secondsLeft + 's)';
+                            } else {
+                                clearInterval(countdownTimer);
+                                window.location.reload();
+                            }
+                        }, 1000);
+                    } else {
+                        setTimeout(function() { window.location.reload(); }, 60000); 
+                    }
+                    
+                    var cmds = "/usr/libexec/jodu_reboot.sh >/dev/null 2>&1 &";
+                    fs.exec_direct('/bin/sh', ['-c', cmds]).catch(function(e) {});
+                });
+            }
+        });
 
         var btn = container.querySelector('#odu-settings-btn');
         btn.addEventListener('click', function() {
@@ -173,7 +337,8 @@ return view.extend({
                     if (stateEl && iconEl) {
                         stateEl.innerText = baseText + ' (' + secondsLeft + 's)';
                         stateEl.style.color = '#03dac6'; 
-                        iconEl.innerHTML = '<svg viewBox="0 0 24 24" fill="#03dac6"><path d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M12 20A8 8 0 1 1 20 12A8 8 0 0 1 12 20M12 4A8 8 0 0 0 4 12H6A6 6 0 0 1 12 6V4Z"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg>';
+                        
+                        iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#03dac6"><path d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M12 20A8 8 0 1 1 20 12A8 8 0 0 1 12 20M12 4A8 8 0 0 0 4 12H6A6 6 0 0 1 12 6V4Z"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg>';
                         
                         var countdownTimer = setInterval(function() {
                             secondsLeft--;
@@ -198,9 +363,7 @@ return view.extend({
                         '/usr/libexec/odu-setup.sh >/dev/null 2>&1 &'
                     ].join('; ');
                     
-                    fs.exec_direct('/bin/sh', ['-c', cmds]).catch(function(e) {
-                        console.error("Execution failed:", e);
-                    });
+                    fs.exec_direct('/bin/sh', ['-c', cmds]).catch(function(e) {});
                 };
                 
                 btnWrap.appendChild(btnCancel);
@@ -212,42 +375,84 @@ return view.extend({
             });
         });
 
+        if (window.oduUptimeTicker) clearInterval(window.oduUptimeTicker);
+        window.oduUptimeTicker = setInterval(function() {
+            if (isConfiguring) return;
+            var el = document.getElementById('ui-uptime-val');
+            if (!el) return; 
+            
+            if (window.oduBootTime) {
+                var up = Math.floor((Date.now() - window.oduBootTime) / 1000);
+                if (up >= 0) {
+                    var d = Math.floor(up / 86400);
+                    var h = Math.floor((up % 86400) / 3600);
+                    var m = Math.floor((up % 3600) / 60);
+                    var s = up % 60;
+                    var upStr = '';
+                    if (d > 0) upStr += d + 'd ';
+                    if (h > 0) upStr += h + 'h ';
+                    if (m > 0) upStr += m + 'm ';
+                    upStr += s + 's';
+                    el.innerText = upStr;
+                }
+            }
+        }, 1000);
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            var k = 1024, sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            var i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
         poll.add(function() {
             if (isConfiguring) return; 
 
             return fs.exec_direct('/usr/libexec/odu-data.sh').then(function(res) {
+                if (isConfiguring) return; 
+                
                 try { 
                     if (!res) return;
                     var data = JSON.parse(res.trim()); 
+                    
+                    if (data.uptime && data.uptime !== "0" && !isConfiguring) {
+                        var up = parseInt(data.uptime, 10);
+                        if (!isNaN(up) && up > 0) {
+                            var bt = Date.now() - (up * 1000);
+                            window.oduBootTime = bt;
+                            sessionStorage.setItem('odu_boot_time', bt);
+                        }
+                    }
+
                     var stateEl = document.getElementById('ui-state');
                     var iconEl = document.getElementById('icon-conn');
 
                     if (data.server_link === 'INITIALIZING' || data.server_link === 'CONFIGURING') {
                         stateEl.innerText = 'PROVISIONING DEVICE';
-                        stateEl.style.color = '#03dac6'; 
-                        iconEl.innerHTML = '<svg viewBox="0 0 24 24" fill="#03dac6"><path d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M12 20A8 8 0 1 1 20 12A8 8 0 0 1 12 20M12 4A8 8 0 0 0 4 12H6A6 6 0 0 1 12 6V4Z"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg>';
+                        stateEl.style.color = '#2dd4bf'; 
+                        iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><circle cx="12" cy="12" r="2" fill="#2dd4bf"/><circle cx="12" cy="12" r="6"><animate attributeName="r" values="2; 10" dur="1.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="1; 0" dur="1.5s" repeatCount="indefinite"/></circle><circle cx="12" cy="12" r="10"><animate attributeName="r" values="2; 10" dur="1.5s" begin="0.75s" repeatCount="indefinite"/><animate attributeName="opacity" values="1; 0" dur="1.5s" begin="0.75s" repeatCount="indefinite"/></circle></svg>';
                         return; 
                     }
 
                     if (data.server_link === 'OFFLINE') {
                         stateEl.innerText = 'LINK DOWN';
-                        stateEl.style.color = '#cf6679';
-                        iconEl.innerHTML = '<svg viewBox="0 0 24 24" fill="#cf6679"><path d="M22.11 21.46L2.39 1.73L1.11 3L5.56 7.45C3.54 8.21 2 10.15 2 12.5C2 15.54 4.46 18 7.5 18H16.11L19.84 21.73L21.11 20.46V21.46M7.5 16C5.57 16 4 14.43 4 12.5C4 10.82 5.19 9.4 6.78 9.06L14.71 17H7.5M19.35 10.04C18.67 6.59 15.64 4 12 4C10.66 4 9.41 4.36 8.36 4.97L9.95 6.56C10.59 6.2 11.27 6 12 6C15.31 6 18 8.69 18 12C18 12.44 17.95 12.87 17.85 13.27L20.85 16.27C21.5 15.22 22 13.9 22 12.5C22 10.69 20.86 9.08 19.35 10.04Z"/></svg>';
+                        stateEl.style.color = '#f43f5e';
+                        iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M17.31 17.31A10.43 10.43 0 0 1 12 19c-7 0-10-7-10-7a13.23 13.23 0 0 1 7.58-6.19"/><path d="M14 14.66V17c0 .55-.47.98-.97 1.21C11.69 18.75 10 18.24 10 17v-2.34"/><path d="m2 2 20 20"/></svg>';
                         return;
                     }
 
                     stateEl.innerText = 'LINK ACTIVE';
-                    stateEl.style.color = '#4dff4d';
-                    iconEl.innerHTML = '<svg viewBox="0 0 24 24" fill="#4dff4d"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4C9.11 4 6.6 5.64 5.35 8.04C2.34 8.36 0 10.91 0 14C0 17.31 2.69 20 6 20H19C21.76 20 24 17.76 24 15C24 12.36 21.95 10.22 19.35 10.04Z"/></svg>';
+                    stateEl.style.color = '#4ade80';
+                    iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>';
 
                     if(data.temp && data.temp !== "0" && data.temp !== "--" && data.temp !== "") {
                         document.getElementById('ui-temp').innerText = data.temp + '°C';
                         var tVal = parseInt(data.temp);
-                        var tCol = '#4dff4d'; 
-                        if (tVal >= 41 && tVal <= 45) { tCol = '#ffb84d'; } 
-                        else if (tVal >= 46) { tCol = '#cf6679'; } 
+                        var tCol = '#4ade80'; 
+                        if (tVal >= 40 && tVal <= 45) { tCol = '#fbbf24'; } 
+                        else if (tVal > 45) { tCol = '#f43f5e'; } 
                         
-                        document.getElementById('icon-temp').innerHTML = '<svg viewBox="0 0 24 24" fill="' + tCol + '"><path d="M15 13V5A3 3 0 0 0 9 5V13A5 5 0 1 0 15 13M12 4A1 1 0 0 1 13 5V8H11V5A1 1 0 0 1 12 4Z"/></svg>';
+                        document.getElementById('icon-temp').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="' + tCol + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>';
                     }
                     
                     document.getElementById('ui-top-mode').innerText = (data.mccmnc && data.mccmnc !== '--' ? data.mccmnc : 'Searching PLMN') + ' | NR5G-SA';
@@ -257,7 +462,15 @@ return view.extend({
                     document.getElementById('ui-bw').innerText = data.bw + ' MHz';
                     document.getElementById('ui-arfcn').innerText = data.arfcn;
                     document.getElementById('ui-pcid').innerText = data.pcid;
-                    document.getElementById('ui-bler').innerText = data.bler;
+                    var blerStr = data.bler || "0%";
+                    var blerVal = parseFloat(blerStr.replace('%','')) || 0;
+                    var blerCol = '#f43f5e';
+                    if (blerVal <= 5) blerCol = '#4ade80';
+                    else if (blerVal <= 10) blerCol = '#fbbf24';
+                    var uiBler = document.getElementById('ui-bler');
+                    uiBler.innerText = blerStr;
+                    uiBler.style.color = blerCol;
+
                     document.getElementById('ui-mod').innerText = data.mod;
                     document.getElementById('ui-mimo').innerText = data.mimo;
 
@@ -265,16 +478,26 @@ return view.extend({
                     var rsrq = parseInt(data.rsrq) || -20;
                     var sinr = parseInt(data.sinr) || 0;
 
-                    var rsrpCol = '#cf6679'; 
-                    if (rsrp >= -85) rsrpCol = '#4dff4d'; 
-                    else if (rsrp >= -100) rsrpCol = '#ffb84d'; 
-                    
+                    var rsrpCol = '#f43f5e'; 
+                    if (rsrp >= -85) rsrpCol = '#4ade80'; 
+                    else if (rsrp >= -100) rsrpCol = '#fbbf24'; 
                     var uiRsrp = document.getElementById('ui-rsrp');
                     uiRsrp.innerText = rsrp + ' dBm';
                     uiRsrp.style.color = rsrpCol;
 
-                    document.getElementById('ui-rsrq').innerText = rsrq + ' dB';
-                    document.getElementById('ui-sinr').innerText = sinr + ' dB';
+                    var rsrqCol = '#f43f5e';
+                    if (rsrq >= -9) rsrqCol = '#4ade80';
+                    else if (rsrq >= -13) rsrqCol = '#fbbf24';
+                    var uiRsrq = document.getElementById('ui-rsrq');
+                    uiRsrq.innerText = rsrq + ' dB';
+                    uiRsrq.style.color = rsrqCol;
+
+                    var sinrCol = '#f43f5e';
+                    if (sinr >= 25) sinrCol = '#4ade80';
+                    else if (sinr >= 10) sinrCol = '#fbbf24';
+                    var uiSinr = document.getElementById('ui-sinr');
+                    uiSinr.innerText = sinr + ' dB';
+                    uiSinr.style.color = sinrCol;
 
                     var qRsrp = Math.max(0, Math.min(100, ((rsrp + 115) / 55) * 100));
                     var qRsrq = Math.max(0, Math.min(100, ((rsrq + 18) / 9) * 100));
@@ -293,13 +516,20 @@ return view.extend({
                     else if (sigQuality > 0) activeBars = 1;
 
                     var barCoords = [ {x:2,y:17,h:5}, {x:6.5,y:14,h:8}, {x:11,y:11,h:11}, {x:15.5,y:8,h:14}, {x:20,y:5,h:17} ];
-                    var sigSvg = '<svg viewBox="0 0 24 24" fill="none" width="42" height="42">';
+                    var sigSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="36" height="36">';
                     for (var i = 0; i < 5; i++) {
-                        var fCol = (i < activeBars) ? '#4da6ff' : '#444444'; 
+                        var fCol = (i < activeBars) ? '#38bdf8' : '#334155'; 
                         sigSvg += '<rect x="'+barCoords[i].x+'" y="'+barCoords[i].y+'" width="3" height="'+barCoords[i].h+'" rx="0.5" fill="'+fCol+'"/>';
                     }
                     sigSvg += '</svg>';
                     document.getElementById('icon-sig').innerHTML = sigSvg;
+
+                    var rx = parseInt(data.rx_bytes) || 0;
+                    var tx = parseInt(data.tx_bytes) || 0;
+                    var uiRx = document.getElementById('ui-rx-bytes');
+                    var uiTx = document.getElementById('ui-tx-bytes');
+                    if(uiRx) uiRx.innerText = formatBytes(rx);
+                    if(uiTx) uiTx.innerText = formatBytes(tx);
 
                     if (data.scc_pcid && data.scc_pcid !== "0" && data.scc_pcid !== "--") {
                         document.getElementById('ui-ca-status').innerText = 'Active (CA)';
@@ -343,9 +573,7 @@ return view.extend({
                         document.getElementById('ui-scc-rsrq').innerText = 'NA';
                         document.getElementById('ui-scc-sinr').innerText = 'NA';
                     }
-                } catch(e) {
-                    console.error("JSON Parse failed for ODU Payload:", e);
-                }
+                } catch(e) {}
             });
         }, 2); 
 
