@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-jodu52140-status
-PKG_VERSION:=1.1.1
+PKG_VERSION:=1.1.2
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -36,6 +36,7 @@ define Package/luci-app-jodu52140-status/install
 	$(INSTALL_BIN) ./root/usr/libexec/odu-data.sh $(1)/usr/libexec/
 	$(INSTALL_BIN) ./root/usr/libexec/odu-setup.sh $(1)/usr/libexec/
 	$(INSTALL_BIN) ./root/usr/libexec/jodu_reboot.sh $(1)/usr/libexec/
+	$(INSTALL_BIN) ./root/usr/libexec/jodu_at.sh $(1)/usr/libexec/
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) ./root/etc/config/jodu52140 $(1)/etc/config/
 endef

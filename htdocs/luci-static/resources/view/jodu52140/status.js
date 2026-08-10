@@ -22,6 +22,7 @@ return view.extend({
             
             .sa-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
             .sa-title-row { display: flex; align-items: center; gap: 15px; width: auto; }
+            .sa-header-actions { display: flex; align-items: center; gap: 8px; }
             .sa-header-bar h2 { margin: 0; white-space: nowrap; line-height: 1; font-weight: 800; font-size: 24px; color: #f8fafc; }
             
             .sa-uptime { display: flex; flex-direction: row; align-items: baseline; justify-content: flex-start; margin-top: 2px; }
@@ -147,10 +148,17 @@ return view.extend({
                     <h2 style="color: #60a5fa; text-shadow: 0 0 15px rgba(96,165,250,0.4);">JioTrue 5G</h2><span id="ui-top-mode">--</span>
                 </div>
                 <div class="cbi-section-node sa-card">
-                    <div class="sa-icon" id="icon-temp">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+                    <div class="sa-icon" id="icon-cpu">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36">
+                            <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/>
+                            <rect x="9" y="9" width="6" height="6"/>
+                            <line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/>
+                            <line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/>
+                            <line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/>
+                            <line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>
+                        </svg>
                     </div>
-                    <h2 id="ui-temp">--°C</h2><span>Temperature</span>
+                    <h2 id="ui-cpu">--%</h2><span>CPU Usage <span id="ui-temp" style="color:#facc15; margin-left: 5px; font-weight: 500;">(--°C)</span></span>
                 </div>
                 <div class="cbi-section-node sa-card">
                     <div class="sa-icon" id="icon-sig">
@@ -282,27 +290,64 @@ return view.extend({
         btn.addEventListener('click', function() {
             uci.load('jodu52140').then(function() {
                 var ip = uci.get('jodu52140', 'main', 'ip') || '192.168.225.1';
+                var user = uci.get('jodu52140', 'main', 'user') || 'root';
+                var pass = uci.get('jodu52140', 'main', 'pass') || 'oelinux123';
                 var arfcn = uci.get('jodu52140', 'main', 'arfcn') || '';
                 var pci = uci.get('jodu52140', 'main', 'pci') || '';
                 
                 var body = document.createElement('div');
                 body.innerHTML = `
-                    <div class="cbi-value">
-                        <label class="cbi-value-title">ODU IP Address</label>
-                        <div class="cbi-value-field">
-                            <input type="text" id="cfg-ip" class="cbi-input-text" value="${ip}">
+                    <ul class="cbi-tabmenu">
+                        <li class="cbi-tab" id="tab-locking"><a href="javascript:void(0);">Cell Locking</a></li>
+                        <li class="cbi-tab-disabled" id="tab-terminal"><a href="javascript:void(0);">Terminal</a></li>
+                        <li class="cbi-tab-disabled" id="tab-config"><a href="javascript:void(0);">Config</a></li>
+                    </ul>
+                    
+                    <div id="container-locking" style="margin-top: 15px;">
+                        <div class="cbi-value">
+                            <label class="cbi-value-title">NR-ARFCN Lock</label>
+                            <div class="cbi-value-field">
+                                <input type="text" id="cfg-arfcn" class="cbi-input-text" placeholder="e.g. 634080 (Leave blank to unlock)" value="${arfcn}">
+                            </div>
+                        </div>
+                        <div class="cbi-value">
+                            <label class="cbi-value-title">NR PCI Lock</label>
+                            <div class="cbi-value-field">
+                                <input type="text" id="cfg-pci" class="cbi-input-text" placeholder="e.g. 263 (Leave blank to unlock)" value="${pci}">
+                            </div>
                         </div>
                     </div>
-                    <div class="cbi-value">
-                        <label class="cbi-value-title">NR-ARFCN Lock</label>
-                        <div class="cbi-value-field">
-                            <input type="text" id="cfg-arfcn" class="cbi-input-text" placeholder="e.g. 634080 (Leave blank to unlock)" value="${arfcn}">
+                    
+                    <div id="container-terminal" style="display: none; margin-top: 15px;">
+                        <div style="background: #0f172a; color: #a78bfa; padding: 15px; border-radius: 8px; font-family: monospace; min-height: 200px; max-height: 400px; overflow-y: auto; margin-bottom: 15px; font-size: 13px;" id="odu-term-out">
+                            <div>Welcome to Jio ODU AT Terminal.</div>
+                            <div style="color: #64748b;">Warning: Invalid AT commands may cause the modem to crash or reboot.</div>
+                            <div style="color: #64748b;">(Note: Each command takes ~10 seconds to execute via Telnet injection)</div><br>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="odu-term-in" class="cbi-input-text" placeholder="e.g. AT+QNWINFO" style="flex: 1; font-family: monospace; text-transform: uppercase;" autocomplete="off">
+                            <button class="btn cbi-button-action important" id="odu-term-send">Send</button>
                         </div>
                     </div>
-                    <div class="cbi-value">
-                        <label class="cbi-value-title">NR PCI Lock</label>
-                        <div class="cbi-value-field">
-                            <input type="text" id="cfg-pci" class="cbi-input-text" placeholder="e.g. 263 (Leave blank to unlock)" value="${pci}">
+                    
+                    <div id="container-config" style="display: none; margin-top: 15px;">
+                        <div class="cbi-value">
+                            <label class="cbi-value-title">ODU IP Address</label>
+                            <div class="cbi-value-field">
+                                <input type="text" id="cfg-ip" class="cbi-input-text" value="${ip}">
+                            </div>
+                        </div>
+                        <div class="cbi-value">
+                            <label class="cbi-value-title">Telnet Username</label>
+                            <div class="cbi-value-field">
+                                <input type="text" id="cfg-user" class="cbi-input-text" value="${user}">
+                            </div>
+                        </div>
+                        <div class="cbi-value">
+                            <label class="cbi-value-title">Telnet Password</label>
+                            <div class="cbi-value-field">
+                                <input type="password" id="cfg-pass" class="cbi-input-text" value="${pass}">
+                            </div>
                         </div>
                     </div>
                 `;
@@ -313,17 +358,109 @@ return view.extend({
                 
                 var btnCancel = document.createElement('button');
                 btnCancel.className = 'btn';
-                btnCancel.innerText = 'Cancel';
+                btnCancel.innerText = 'Close';
                 btnCancel.onclick = ui.hideModal;
+                btnWrap.appendChild(btnCancel);
                 
                 var btnSave = document.createElement('button');
                 btnSave.className = 'btn cbi-button-action important';
                 btnSave.innerText = 'Save & Apply';
+                btnSave.id = 'btn-save-settings';
+                btnWrap.appendChild(btnSave);
+                
+                body.appendChild(btnWrap);
+                ui.showModal('Settings', [body]);
+                
+                var tLocking = document.getElementById('tab-locking');
+                var tTerminal = document.getElementById('tab-terminal');
+                var tConfig = document.getElementById('tab-config');
+                var cLocking = document.getElementById('container-locking');
+                var cTerminal = document.getElementById('container-terminal');
+                var cConfig = document.getElementById('container-config');
+                var bSave = document.getElementById('btn-save-settings');
+                
+                tLocking.onclick = function() {
+                    tLocking.className = 'cbi-tab';
+                    tTerminal.className = 'cbi-tab-disabled';
+                    tConfig.className = 'cbi-tab-disabled';
+                    cLocking.style.display = 'block';
+                    cTerminal.style.display = 'none';
+                    cConfig.style.display = 'none';
+                    bSave.style.display = 'inline-block';
+                };
+                
+                tTerminal.onclick = function() {
+                    tTerminal.className = 'cbi-tab';
+                    tLocking.className = 'cbi-tab-disabled';
+                    tConfig.className = 'cbi-tab-disabled';
+                    cTerminal.style.display = 'block';
+                    cLocking.style.display = 'none';
+                    cConfig.style.display = 'none';
+                    bSave.style.display = 'none';
+                    document.getElementById('odu-term-in').focus();
+                };
+                
+                tConfig.onclick = function() {
+                    tConfig.className = 'cbi-tab';
+                    tLocking.className = 'cbi-tab-disabled';
+                    tTerminal.className = 'cbi-tab-disabled';
+                    cConfig.style.display = 'block';
+                    cLocking.style.display = 'none';
+                    cTerminal.style.display = 'none';
+                    bSave.style.display = 'inline-block';
+                };
+                
+                var inEl = document.getElementById('odu-term-in');
+                var outEl = document.getElementById('odu-term-out');
+                var sendBtn = document.getElementById('odu-term-send');
+                
+                var executeCmd = function() {
+                    var cmd = inEl.value.trim();
+                    if (!cmd) return;
+                    if (!cmd.toUpperCase().startsWith('AT')) cmd = 'AT' + cmd;
+                    
+                    var outDiv = document.createElement('div');
+                    outDiv.style.color = '#38bdf8';
+                    outDiv.innerText = '> ' + cmd.toUpperCase();
+                    outEl.appendChild(outDiv);
+                    
+                    var waitDiv = document.createElement('div');
+                    waitDiv.style.color = '#94a3b8';
+                    waitDiv.innerText = 'Executing...';
+                    outEl.appendChild(waitDiv);
+                    outEl.scrollTop = outEl.scrollHeight;
+                    
+                    inEl.value = '';
+                    inEl.disabled = true;
+                    sendBtn.disabled = true;
+                    
+                    fs.exec_direct('/usr/libexec/jodu_at.sh', [cmd.toUpperCase()]).then(function(res) {
+                        waitDiv.innerText = (res && res.trim() !== '') ? res.trim() : 'OK';
+                        waitDiv.style.color = '#f8fafc';
+                        outEl.scrollTop = outEl.scrollHeight;
+                    }).catch(function(e) {
+                        waitDiv.innerText = 'Error: ' + e;
+                        waitDiv.style.color = '#ef4444';
+                        outEl.scrollTop = outEl.scrollHeight;
+                    }).finally(function() {
+                        inEl.disabled = false;
+                        sendBtn.disabled = false;
+                        inEl.focus();
+                    });
+                };
+                
+                sendBtn.onclick = executeCmd;
+                inEl.onkeypress = function(e) {
+                    if (e.key === 'Enter') executeCmd();
+                };
+                
                 btnSave.onclick = function() {
                     btnSave.innerText = 'Applying...';
                     btnSave.disabled = true;
                     
                     var newIp = document.getElementById('cfg-ip').value || '192.168.225.1';
+                    var newUser = document.getElementById('cfg-user').value || 'root';
+                    var newPass = document.getElementById('cfg-pass').value || 'oelinux123';
                     var newArfcn = document.getElementById('cfg-arfcn').value || '';
                     var newPci = document.getElementById('cfg-pci').value || '';
                     
@@ -357,6 +494,8 @@ return view.extend({
                     
                     var cmds = [
                         'uci set jodu52140.main.ip="' + newIp + '"',
+                        'uci set jodu52140.main.user="' + newUser + '"',
+                        'uci set jodu52140.main.pass="' + newPass + '"',
                         'uci set jodu52140.main.arfcn="' + newArfcn + '"',
                         'uci set jodu52140.main.pci="' + newPci + '"',
                         'uci commit jodu52140',
@@ -365,13 +504,6 @@ return view.extend({
                     
                     fs.exec_direct('/bin/sh', ['-c', cmds]).catch(function(e) {});
                 };
-                
-                btnWrap.appendChild(btnCancel);
-                btnWrap.appendChild(document.createTextNode(' '));
-                btnWrap.appendChild(btnSave);
-                body.appendChild(btnWrap);
-                
-                ui.showModal('ODU Configuration', [body]);
             });
         });
 
@@ -427,6 +559,46 @@ return view.extend({
                     var stateEl = document.getElementById('ui-state');
                     var iconEl = document.getElementById('icon-conn');
 
+                    if (data.cpu) {
+                        var cpuVal = parseInt(data.cpu, 10);
+                        if (!isNaN(cpuVal)) {
+                            var cCol = '#4ade80';
+                            if (cpuVal >= 35) cCol = '#facc15';
+                            if (cpuVal >= 70) cCol = '#ef4444';
+                            
+                            var cpuEl = document.getElementById('ui-cpu');
+                            if (cpuEl) {
+                                cpuEl.innerText = cpuVal + '%';
+                                cpuEl.style.color = cCol;
+                                cpuEl.style.textShadow = '0 0 15px ' + cCol + '66';
+                            }
+                            
+                            var iconCpuEl = document.getElementById('icon-cpu');
+                            if (iconCpuEl) {
+                                iconCpuEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="' + cCol + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>';
+                            }
+                        }
+                    }
+
+                    if (data.temp) {
+                        var tempStr = data.temp;
+                        if (tempStr.includes(',')) {
+                            tempStr = tempStr.split(',')[1].trim();
+                        }
+                        var tempVal = parseInt(tempStr, 10);
+                        if (!isNaN(tempVal)) {
+                            var tCol = '#94a3b8';
+                            if (tempVal >= 40) tCol = '#facc15';
+                            if (tempVal > 45) tCol = '#ef4444';
+                            
+                            var tempEl = document.getElementById('ui-temp');
+                            if (tempEl) {
+                                tempEl.innerText = '(' + tempVal + '°C)';
+                                tempEl.style.color = tCol;
+                            }
+                        }
+                    }
+
                     if (data.server_link === 'INITIALIZING' || data.server_link === 'CONFIGURING') {
                         stateEl.innerText = 'PROVISIONING DEVICE';
                         stateEl.style.color = '#2dd4bf'; 
@@ -441,19 +613,16 @@ return view.extend({
                         return;
                     }
 
+                    if (data.state === 'SEARCHING' || data.state === 'DISCONNECTED') {
+                        stateEl.innerText = 'PROVISIONING DEVICE';
+                        stateEl.style.color = '#2dd4bf';
+                        iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>';
+                        return;
+                    }
+
                     stateEl.innerText = 'LINK ACTIVE';
                     stateEl.style.color = '#4ade80';
                     iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>';
-
-                    if(data.temp && data.temp !== "0" && data.temp !== "--" && data.temp !== "") {
-                        document.getElementById('ui-temp').innerText = data.temp + '°C';
-                        var tVal = parseInt(data.temp);
-                        var tCol = '#4ade80'; 
-                        if (tVal >= 40 && tVal <= 45) { tCol = '#fbbf24'; } 
-                        else if (tVal > 45) { tCol = '#f43f5e'; } 
-                        
-                        document.getElementById('icon-temp').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="' + tCol + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>';
-                    }
                     
                     document.getElementById('ui-top-mode').innerText = (data.mccmnc && data.mccmnc !== '--' ? data.mccmnc : 'Searching PLMN') + ' | NR5G-SA';
 

@@ -6,7 +6,8 @@
             "file": {
                 "/usr/libexec/odu-data.sh": [ "read", "exec" ],
                 "/usr/libexec/jodu_reboot.sh": [ "exec" ],
-                "/usr/libexec/jodu_uptime.sh": [ "exec" ]
+                "/usr/libexec/jodu_uptime.sh": [ "exec" ],
+                "/usr/libexec/jodu_at.sh": [ "exec" ]
             }
         },
         "write": {
