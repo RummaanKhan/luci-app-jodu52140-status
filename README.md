@@ -3,7 +3,7 @@
 # luci-app-jodu52140-status
 ## Made with Gemini as a Personal Fun Project.
  
-![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.1.2-blue.svg)
 ![OpenWrt Compatible](https://img.shields.io/badge/OpenWrt-Compatible-success.svg)
 ![ImmortalWrt Compatible](https://img.shields.io/badge/ImmortalWrt-Compatible-success.svg)
 
