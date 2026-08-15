@@ -5,14 +5,10 @@ IP=$(/sbin/uci -q get jodu52140.main.ip)
 
 if [ -f /tmp/odu_force_setup ]; then
     NEW_IP=$(awk 'NR==1' /tmp/odu_force_setup)
-    NEW_USER=$(awk 'NR==2' /tmp/odu_force_setup)
-    NEW_PASS=$(awk 'NR==3' /tmp/odu_force_setup)
     rm -f /tmp/odu_force_setup
     
     if [ -n "$NEW_IP" ]; then
         /sbin/uci set jodu52140.main.ip="$NEW_IP"
-        /sbin/uci set jodu52140.main.user="$NEW_USER"
-        /sbin/uci set jodu52140.main.pass="$NEW_PASS"
         /sbin/uci commit jodu52140
     fi
     

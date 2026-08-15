@@ -262,6 +262,7 @@ return view.extend({
                     
                     if (stateEl && iconEl) {
                         stateEl.style.color = '#ef4444'; 
+                        stateEl.style.textShadow = '0 0 15px rgba(239,68,68,0.4)'; 
                         
                         iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="36" height="36"><circle cx="20" cy="20" r="16" fill="none" stroke="#334155" stroke-width="3"/><circle cx="20" cy="20" r="16" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="25 75" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="1s" repeatCount="indefinite"/></circle><circle cx="20" cy="20" r="8" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="10 40" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="360 20 20" to="0 20 20" dur="1.5s" repeatCount="indefinite"/></circle><circle cx="20" cy="20" r="3" fill="#ef4444"><animate attributeName="opacity" values="1;0.3;1" dur="1s" repeatCount="indefinite"/></circle></svg>';
                         
@@ -290,8 +291,6 @@ return view.extend({
         btn.addEventListener('click', function() {
             uci.load('jodu52140').then(function() {
                 var ip = uci.get('jodu52140', 'main', 'ip') || '192.168.225.1';
-                var user = uci.get('jodu52140', 'main', 'user') || 'root';
-                var pass = uci.get('jodu52140', 'main', 'pass') || 'oelinux123';
                 var arfcn = uci.get('jodu52140', 'main', 'arfcn') || '';
                 var pci = uci.get('jodu52140', 'main', 'pci') || '';
                 
@@ -307,13 +306,13 @@ return view.extend({
                         <div class="cbi-value">
                             <label class="cbi-value-title">NR-ARFCN Lock</label>
                             <div class="cbi-value-field">
-                                <input type="text" id="cfg-arfcn" class="cbi-input-text" placeholder="e.g. 634080 (Leave blank to unlock)" value="${arfcn}">
+                                <input type="text" id="cfg-arfcn" class="cbi-input-text" placeholder="e.g. 634080 (Leave blank to unlock)" value="${arfcn}" autocomplete="off" data-lpignore="true">
                             </div>
                         </div>
                         <div class="cbi-value">
                             <label class="cbi-value-title">NR PCI Lock</label>
                             <div class="cbi-value-field">
-                                <input type="text" id="cfg-pci" class="cbi-input-text" placeholder="e.g. 263 (Leave blank to unlock)" value="${pci}">
+                                <input type="text" id="cfg-pci" class="cbi-input-text" placeholder="e.g. 263 (Leave blank to unlock)" value="${pci}" autocomplete="off" data-lpignore="true">
                             </div>
                         </div>
                     </div>
@@ -334,19 +333,7 @@ return view.extend({
                         <div class="cbi-value">
                             <label class="cbi-value-title">ODU IP Address</label>
                             <div class="cbi-value-field">
-                                <input type="text" id="cfg-ip" class="cbi-input-text" value="${ip}">
-                            </div>
-                        </div>
-                        <div class="cbi-value">
-                            <label class="cbi-value-title">Telnet Username</label>
-                            <div class="cbi-value-field">
-                                <input type="text" id="cfg-user" class="cbi-input-text" value="${user}">
-                            </div>
-                        </div>
-                        <div class="cbi-value">
-                            <label class="cbi-value-title">Telnet Password</label>
-                            <div class="cbi-value-field">
-                                <input type="password" id="cfg-pass" class="cbi-input-text" value="${pass}">
+                                <input type="text" id="cfg-ip" class="cbi-input-text" value="${ip}" autocomplete="off" data-lpignore="true">
                             </div>
                         </div>
                     </div>
@@ -455,25 +442,23 @@ return view.extend({
                 };
                 
                 btnSave.onclick = function() {
+                    var newIp = (document.getElementById('cfg-ip') ? document.getElementById('cfg-ip').value.trim() : '') || '192.168.225.1';
+                    var newArfcn = (document.getElementById('cfg-arfcn') ? document.getElementById('cfg-arfcn').value.trim() : '');
+                    var newPci = (document.getElementById('cfg-pci') ? document.getElementById('cfg-pci').value.trim() : '');
+                    
                     btnSave.innerText = 'Applying...';
                     btnSave.disabled = true;
-                    
-                    var newIp = document.getElementById('cfg-ip').value || '192.168.225.1';
-                    var newUser = document.getElementById('cfg-user').value || 'root';
-                    var newPass = document.getElementById('cfg-pass').value || 'oelinux123';
-                    var newArfcn = document.getElementById('cfg-arfcn').value || '';
-                    var newPci = document.getElementById('cfg-pci').value || '';
-                    
                     isConfiguring = true; 
                     
                     var stateEl = document.getElementById('ui-state');
                     var iconEl = document.getElementById('icon-conn');
                     var secondsLeft = 20;
-                    var baseText = (newArfcn || newPci) ? 'LOCKING CELL' : 'APPLYING CONFIG';
+                    var baseText = (newArfcn && newPci) ? 'LOCKING CELL' : (newArfcn || newPci ? 'APPLYING LOCK' : 'UNLOCKING CELL');
                     
                     if (stateEl && iconEl) {
                         stateEl.innerText = baseText + ' (' + secondsLeft + 's)';
                         stateEl.style.color = '#03dac6'; 
+                        stateEl.style.textShadow = '0 0 15px rgba(3,218,198,0.4)'; 
                         
                         iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#03dac6"><path d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M12 20A8 8 0 1 1 20 12A8 8 0 0 1 12 20M12 4A8 8 0 0 0 4 12H6A6 6 0 0 1 12 6V4Z"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg>';
                         
@@ -494,12 +479,10 @@ return view.extend({
                     
                     var cmds = [
                         'uci set jodu52140.main.ip="' + newIp + '"',
-                        'uci set jodu52140.main.user="' + newUser + '"',
-                        'uci set jodu52140.main.pass="' + newPass + '"',
                         'uci set jodu52140.main.arfcn="' + newArfcn + '"',
                         'uci set jodu52140.main.pci="' + newPci + '"',
                         'uci commit jodu52140',
-                        '/usr/libexec/odu-setup.sh >/dev/null 2>&1 &'
+                        '/usr/libexec/jodu_lock.sh "' + newArfcn + '" "' + newPci + '"'
                     ].join('; ');
                     
                     fs.exec_direct('/bin/sh', ['-c', cmds]).catch(function(e) {});
@@ -602,6 +585,7 @@ return view.extend({
                     if (data.server_link === 'INITIALIZING' || data.server_link === 'CONFIGURING') {
                         stateEl.innerText = 'PROVISIONING DEVICE';
                         stateEl.style.color = '#2dd4bf'; 
+                        stateEl.style.textShadow = '0 0 15px rgba(45,212,191,0.4)'; 
                         iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><circle cx="12" cy="12" r="2" fill="#2dd4bf"/><circle cx="12" cy="12" r="6"><animate attributeName="r" values="2; 10" dur="1.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="1; 0" dur="1.5s" repeatCount="indefinite"/></circle><circle cx="12" cy="12" r="10"><animate attributeName="r" values="2; 10" dur="1.5s" begin="0.75s" repeatCount="indefinite"/><animate attributeName="opacity" values="1; 0" dur="1.5s" begin="0.75s" repeatCount="indefinite"/></circle></svg>';
                         return; 
                     }
@@ -609,6 +593,7 @@ return view.extend({
                     if (data.server_link === 'OFFLINE') {
                         stateEl.innerText = 'LINK DOWN';
                         stateEl.style.color = '#f43f5e';
+                        stateEl.style.textShadow = '0 0 15px rgba(244,63,94,0.4)';
                         iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M17.31 17.31A10.43 10.43 0 0 1 12 19c-7 0-10-7-10-7a13.23 13.23 0 0 1 7.58-6.19"/><path d="M14 14.66V17c0 .55-.47.98-.97 1.21C11.69 18.75 10 18.24 10 17v-2.34"/><path d="m2 2 20 20"/></svg>';
                         return;
                     }
@@ -616,12 +601,14 @@ return view.extend({
                     if (data.state === 'SEARCHING' || data.state === 'DISCONNECTED') {
                         stateEl.innerText = 'PROVISIONING DEVICE';
                         stateEl.style.color = '#2dd4bf';
+                        stateEl.style.textShadow = '0 0 15px rgba(45,212,191,0.4)';
                         iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>';
                         return;
                     }
 
                     stateEl.innerText = 'LINK ACTIVE';
                     stateEl.style.color = '#4ade80';
+                    stateEl.style.textShadow = '0 0 15px rgba(74,222,128,0.4)';
                     iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>';
                     
                     document.getElementById('ui-top-mode').innerText = (data.mccmnc && data.mccmnc !== '--' ? data.mccmnc : 'Searching PLMN') + ' | NR5G-SA';

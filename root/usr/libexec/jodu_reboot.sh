@@ -1,7 +1,7 @@
 #!/bin/sh
-IP=$(uci -q get jodu52140.main.ip || echo "192.168.225.1")
-USER=$(uci -q get jodu52140.main.user || echo "root")
-PASS=$(uci -q get jodu52140.main.pass || echo "oelinux123")
+IP=$(/sbin/uci -q get jodu52140.main.ip || echo "192.168.225.1")
+USER="root"
+PASS="oelinux123"
 
 (
     sleep 2

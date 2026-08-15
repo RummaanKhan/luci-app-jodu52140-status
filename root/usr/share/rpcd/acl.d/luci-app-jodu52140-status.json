@@ -7,14 +7,18 @@
                 "/usr/libexec/odu-data.sh": [ "read", "exec" ],
                 "/usr/libexec/jodu_reboot.sh": [ "exec" ],
                 "/usr/libexec/jodu_uptime.sh": [ "exec" ],
-                "/usr/libexec/jodu_at.sh": [ "exec" ]
+                "/usr/libexec/jodu_at.sh": [ "exec" ],
+                "/usr/libexec/jodu_lock.sh": [ "exec" ],
+                "/usr/libexec/odu-setup.sh": [ "exec" ],
+                "/bin/sh": [ "exec" ]
             }
         },
         "write": {
             "uci": [ "jodu52140" ],
             "file": {
                 "/tmp/odu_force_setup": [ "write" ],
-                "/sbin/uci": [ "exec" ]
+                "/sbin/uci": [ "exec" ],
+                "/bin/sh": [ "exec" ]
             }
         }
     }

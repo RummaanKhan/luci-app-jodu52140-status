@@ -1,18 +1,25 @@
 #!/bin/sh
 
-trap 'rm -f /tmp/odu_setup.lock' EXIT
+touch /tmp/odu_setup.lock
+trap 'rm -f /tmp/odu_setup.lock' EXIT INT TERM HUP
 
 IP=$(/sbin/uci -q get jodu52140.main.ip || echo "192.168.225.1")
-USER=$(/sbin/uci -q get jodu52140.main.user || echo "root")
-PASS=$(/sbin/uci -q get jodu52140.main.pass || echo "oelinux123")
+USER="root"
+PASS="oelinux123"
 
 NR_ARFCN=$(/sbin/uci -q get jodu52140.main.arfcn)
 NR_PCI=$(/sbin/uci -q get jodu52140.main.pci)
 
 if [ -z "$NR_ARFCN" ] || [ -z "$NR_PCI" ]; then
-    AT_CMD='AT+QNWLOCK="common/5g",0'
+    AT_CMD='AT+QNWLOCK="COMMON/5G",0'
 else
-    AT_CMD="AT+QNWLOCK=\"common/5g\",${NR_PCI},${NR_ARFCN},30,78"
+    SCS="30"
+    BAND="78"
+    if [ "$NR_ARFCN" -lt 200000 ] 2>/dev/null; then
+        SCS="15"
+        BAND="28"
+    fi
+    AT_CMD="AT+QNWLOCK=\"COMMON/5G\",${NR_PCI},${NR_ARFCN},${SCS},${BAND}"
 fi
 
 (
