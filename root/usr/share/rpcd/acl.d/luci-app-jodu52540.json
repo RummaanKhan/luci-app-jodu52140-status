@@ -1,0 +1,20 @@
+{
+    "luci-app-jodu52540": {
+        "description": "Grant WebUI access to ODU 5G Dashboard",
+        "read": {
+            "uci": [ "jodu52540" ],
+            "file": {
+                "/usr/libexec/odu-data-52540.sh": [ "read", "exec" ],
+                "/usr/libexec/jodu_reboot_52540.sh": [ "exec" ],
+                "/usr/libexec/jodu_uptime_52540.sh": [ "exec" ]
+            }
+        },
+        "write": {
+            "uci": [ "jodu52540" ],
+            "file": {
+                "/tmp/odu_force_setup": [ "write" ],
+                "/sbin/uci": [ "exec" ]
+            }
+        }
+    }
+}
