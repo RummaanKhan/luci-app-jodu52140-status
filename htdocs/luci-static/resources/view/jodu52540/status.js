@@ -197,8 +197,8 @@ return view.extend({
                             <tr class="sa-tr"><td class="sa-td left">Duplex Mode</td><td class="sa-td right val-highlight" id="ui-duplex">--</td></tr>
                             <tr class="sa-tr"><td class="sa-td left">Band</td><td class="sa-td right val-highlight" id="ui-band">--</td></tr>
                             <tr class="sa-tr"><td class="sa-td left">Bandwidth</td><td class="sa-td right val-highlight" id="ui-bw">--</td></tr>
-                            <tr class="sa-tr"><td class="sa-td left">NR-ARFCN</td><td class="sa-td right val-highlight" id="ui-arfcn">--</td></tr>
-                            <tr class="sa-tr"><td class="sa-td left">Physical Cell ID</td><td class="sa-td right val-highlight" id="ui-pcid">--</td></tr>
+                            <tr class="sa-tr"><td class="sa-td left">EARFCN (NR)</td><td class="sa-td right val-highlight" id="ui-arfcn">--</td></tr>
+                            <tr class="sa-tr"><td class="sa-td left">PCI</td><td class="sa-td right val-highlight" id="ui-pcid">--</td></tr>
                             <tr class="sa-tr"><td class="sa-td left">BLER</td><td class="sa-td right val-highlight" id="ui-bler">--</td></tr>
                             <tr class="sa-tr"><td class="sa-td left">Modulation</td><td class="sa-td right val-highlight" id="ui-mod">--</td></tr>
                             <tr class="sa-tr"><td class="sa-td left">MIMO</td><td class="sa-td right val-highlight" id="ui-mimo">--</td></tr>
@@ -611,28 +611,30 @@ return view.extend({
                     stateEl.style.textShadow = '0 0 15px rgba(74,222,128,0.4)';
                     iconEl.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="36" height="36"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>';
                     
-                    document.getElementById('ui-top-mode').innerText = (data.mccmnc && data.mccmnc !== '--' ? data.mccmnc : 'Searching PLMN') + ' | NR5G-SA';
+                    function getData(){ var args=Array.prototype.slice.call(arguments); for(var i=0;i<args.length;i++){ var k=args[i]; if (data[k] !== undefined && data[k] !== null && data[k] !== '' && data[k] !== '--') return data[k]; } return ''; }
 
-                    document.getElementById('ui-duplex').innerText = data.duplex;
-                    document.getElementById('ui-band').innerText = data.band;
-                    document.getElementById('ui-bw').innerText = data.bw + ' MHz';
-                    document.getElementById('ui-arfcn').innerText = data.arfcn;
-                    document.getElementById('ui-pcid').innerText = data.pcid;
-                    var blerStr = data.bler || "0%";
-                    var blerVal = parseFloat(blerStr.replace('%','')) || 0;
-                    var blerCol = '#f43f5e';
-                    if (blerVal <= 5) blerCol = '#4ade80';
-                    else if (blerVal <= 10) blerCol = '#fbbf24';
-                    var uiBler = document.getElementById('ui-bler');
-                    uiBler.innerText = blerStr;
-                    uiBler.style.color = blerCol;
+                                        document.getElementById('ui-top-mode').innerText = (getData('plmn','mccmnc') || 'Searching PLMN') + ' | NR5G-SA';
 
-                    document.getElementById('ui-mod').innerText = data.mod;
-                    document.getElementById('ui-mimo').innerText = data.mimo;
+                                        document.getElementById('ui-duplex').innerText = getData('duplex','connection_mode','operating_mode') || '--';
+                                        document.getElementById('ui-band').innerText = getData('operating_band','band') || '--';
+                                        document.getElementById('ui-bw').innerText = (getData('bandwidth','bw') || '--') + ' MHz';
+                                        document.getElementById('ui-arfcn').innerText = getData('earfcn','arfcn') || '--';
+                                        document.getElementById('ui-pcid').innerText = getData('pci','pcid') || '--';
+                                        var blerStr = getData('bler') || data.bler || "0%";
+                                        var blerVal = parseFloat((blerStr||"0").toString().replace('%','')) || 0;
+                                        var blerCol = '#f43f5e';
+                                        if (blerVal <= 5) blerCol = '#4ade80';
+                                        else if (blerVal <= 10) blerCol = '#fbbf24';
+                                        var uiBler = document.getElementById('ui-bler');
+                                        uiBler.innerText = blerStr;
+                                        uiBler.style.color = blerCol;
 
-                    var rsrp = parseInt(data.rsrp) || -130;
-                    var rsrq = parseInt(data.rsrq) || -20;
-                    var sinr = parseInt(data.sinr) || 0;
+                                        document.getElementById('ui-mod').innerText = getData('modulation','mod') || '--';
+                                        document.getElementById('ui-mimo').innerText = getData('mimo_mode','mimo') || '--';
+
+                                        var rsrp = parseInt(getData('ss_rsrp','rsrp')) || -130;
+                                        var rsrq = parseInt(getData('ss_rsrq','rsrq')) || -20;
+                                        var sinr = parseInt(getData('ss_snr','snr','sinr')) || 0;
 
                     var rsrpCol = '#f43f5e'; 
                     if (rsrp >= -85) rsrpCol = '#4ade80'; 
