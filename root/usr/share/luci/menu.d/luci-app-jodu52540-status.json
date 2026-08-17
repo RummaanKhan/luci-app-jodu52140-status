@@ -1,0 +1,13 @@
+{
+    "admin/status/jodu52540": {
+        "title": "5G Dashboard",
+        "action": {
+            "type": "view",
+            "path": "jodu52540/status"
+        },
+        "depends": {
+            "acl": [ "luci-app-jodu52540-status" ]
+        },
+        "order": 10
+    }
+}
